@@ -44,7 +44,7 @@ def main():
             continue
 
         latest_entry = feed.entries[0]
-       title = latest_entry.title
+        title = latest_entry.title
         link = latest_entry.link.split('?')[0] # さっきのURLクリーンアップ
 
         # --- ここが重要！ ---
