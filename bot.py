@@ -44,14 +44,16 @@ def main():
             continue
 
         latest_entry = feed.entries[0]
+        # ...（中略）...
         title = latest_entry.title
-        link = latest_entry.link.split('?')[0] # さっきのURLクリーンアップ
+        raw_link = latest_entry.link.split('?')[0]
 
-        # --- ここが重要！ ---
-        # URLに含まれる "_" を "\_" に置き換えることで
-        # uwuzuのMarkdownエンジンによる誤作動を防ぎます
+        # 1. http を https に強制変換
+        # これで NHK などの古いリンク形式も今のブラウザで開けるようになります
+        link = raw_link.replace("http://", "https://")
+
+        # 2. 前回の uwuzu (Markdown) 対策も忘れずに
         safe_link = link.replace("_", "\\_")
-        # -------------------
 
         if last_data.get(rss_url) != link:
             # 投稿にはエスケープ済みの safe_link を使う
