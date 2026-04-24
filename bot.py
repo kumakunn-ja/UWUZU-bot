@@ -5,7 +5,7 @@ import os
 # --- 設定エリア ---
 # uwuzuのインスタンスURLとRSSフィードのURLを指定
 UWUZU_INSTANCE = "https://uwuzu.ut-gov.f5.si/home/" # 自分の使っているサーバーURLに変更
-RSS_URL = "https://example.com/feed"        # 取得したいRSSフィードのURLに変更
+RSS_URL = "https://www.gizmodo.jp/index.xml"        # 取得したいRSSフィードのURLに変更
 LAST_LINK_FILE = "last_link.txt"            # 最後に投稿した記事を記録するファイル
 
 def post_to_uwuzu(text):
