@@ -8,16 +8,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      # 最新のNode.js環境を強制的に使う設定
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-      - uses: actions/checkout@v4 # v4のままでも上のenv設定があれば動きます
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v5 # ここをv5に更新
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install feedparser requests
       - name: Run Bot
         env:
           UWUZU_TOKEN: ${{ secrets.UWUZU_TOKEN }}
@@ -26,13 +27,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add last_link.txt
-          git commit -m "Update last posted link" || exit 0
-          git push
-      - name: Commit and Push
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add last_links.json  # ここを .json に変更
+          git add last_links.json
           git commit -m "Update last links" || exit 0
           git push
