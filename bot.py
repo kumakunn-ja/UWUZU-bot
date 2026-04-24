@@ -44,14 +44,19 @@ def main():
             continue
 
         latest_entry = feed.entries[0]
-        title = latest_entry.title
-        link = latest_entry.link
+       title = latest_entry.title
+        link = latest_entry.link.split('?')[0] # さっきのURLクリーンアップ
 
-        # そのサイトの「前回のリンク」と比較
+        # --- ここが重要！ ---
+        # URLに含まれる "_" を "\_" に置き換えることで
+        # uwuzuのMarkdownエンジンによる誤作動を防ぎます
+        safe_link = link.replace("_", "\\_")
+        # -------------------
+
         if last_data.get(rss_url) != link:
-            print(f"新着あり: {title}")
-            content = f"【新着】{title}\n{link}"
-            
+            # 投稿にはエスケープ済みの safe_link を使う
+            content = f"【新着】{title}\n{safe_link}"
+           　
             if post_to_uwuzu(content):
                 # 記録を更新
                 last_data[rss_url] = link
