@@ -1,6 +1,7 @@
 import feedparser
 import requests
 import os
+import json
 
 # --- 設定エリア ---
 # uwuzuのインスタンスURLとRSSフィードのURLを指定
