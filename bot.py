@@ -37,15 +37,21 @@ def post_to_uwuzu(message):
         print("Error: UWUZU_API_KEY が設定されていません。")
         return False
 
+# 教えていただいた専用エンドポイント
     url = f"{UWUZU_INSTANCE.rstrip('/')}/api/ueuse/create"
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
+    
+    # 必須パラメータをJSONにまとめる
+    # ヘッダーにBearerを入れるのではなく、ボディに直接tokenを入れます
+    payload = {
+        "token": api_key,
+        "text": message
     }
-    payload = {"text": message}
 
     try:
-        response = requests.post(url, json=payload, headers=headers)
+        # JSON形式でPOST送信
+        response = requests.post(url, json=payload)
+        
+        # 成功したかチェック
         if response.status_code == 201 or response.status_code == 200:
             return True
         else:
