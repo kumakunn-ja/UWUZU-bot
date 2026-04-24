@@ -4,39 +4,10 @@ import os
 
 # --- 設定エリア ---
 # uwuzuのインスタンスURLとRSSフィードのURLを指定
-UWUZU_INSTANCE = "https://uwuzu.ut-gov.f5.si/home/" # 自分の使っているサーバーURLに変更
+UWUZU_INSTANCE = "https://uwuzu.ut-gov.f5.si/" # 自分の使っているサーバーURLに変更
 RSS_URL = "https://www.gizmodo.jp/index.xml"        # 取得したいRSSフィードのURLに変更
 LAST_LINK_FILE = "last_link.txt"            # 最後に投稿した記事を記録するファイル
 
-def post_to_uwuzu(text):
-    """uwuzu専用APIを使って投稿する"""
-    token = os.environ.get("UWUZU_TOKEN")
-    if not token:
-        print("Error: UWUZU_TOKEN が設定されていません。")
-        return False
-    
-    # 仕様に基づいたURL
-    url = f"{UWUZU_INSTANCE}/api/ueuse/create"
-    
-    # 必須パラメータをJSONで送信
-    data = {
-        "token": token,
-        "text": text
-    }
-    
-    try:
-        # POSTリクエストを送信
-        response = requests.post(url, json=data)
-        
-        # 成功したかどうかの確認
-        if response.status_code == 200:
-            return True
-        else:
-            print(f"投稿失敗: {response.status_code} - {response.text}")
-            return False
-    except Exception as e:
-        print(f"エラーが発生しました: {e}")
-        return False
 def main():
     # RSSフィードを解析
     feed = feedparser.parse(RSS_URL)
@@ -72,3 +43,35 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+def post_to_uwuzu(text):
+    """uwuzu専用APIを使って投稿する"""
+    token = os.environ.get("UWUZU_TOKEN")
+    if not token:
+        print("Error: UWUZU_TOKEN が設定されていません。")
+        return False
+    
+    # 仕様に基づいたURL
+    url = f"{UWUZU_INSTANCE}/api/ueuse/create"
+    
+    # 必須パラメータをJSONで送信
+    data = {
+        "token": token,
+        "text": text
+    }
+    
+    try:
+        # POSTリクエストを送信
+        response = requests.post(url, json=data)
+        
+        # 成功したかどうかの確認
+        if response.status_code == 200:
+            return True
+        else:
+            print(f"投稿失敗: {response.status_code} - {response.text}")
+            return False
+    except Exception as e:
+        print(f"エラーが発生しました: {e}")
+        return False
