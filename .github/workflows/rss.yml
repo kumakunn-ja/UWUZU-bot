@@ -1,0 +1,28 @@
+name: RSS to uwuzu
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run Bot
+        env:
+          UWUZU_TOKEN: ${{ secrets.UWUZU_TOKEN }}
+        run: python bot.py
+      - name: Commit and Push (Save progress)
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add last_link.txt
+          git commit -m "Update last posted link" || exit 0
+          git push
