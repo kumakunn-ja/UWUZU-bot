@@ -7,10 +7,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # 最新のNode.js環境を強制的に使う設定
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4 # v4のままでも上のenv設定があれば動きます
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5 # ここをv5に更新
         with:
           python-version: '3.x'
       - name: Install dependencies
