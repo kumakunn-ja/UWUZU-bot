@@ -32,7 +32,7 @@ def save_last_data(data):
 def post_to_uwuzu(message):
     """uwuzuに投稿する"""
     # GitHub ActionsのSecretsに設定したAPIキーを取得
-    api_key = os.getenv("UWUZU_INSTANCE")
+    api_key = os.getenv("UWUZU_TOKEN")
     if not api_key:
         print("Error: UWUZU_API_KEY が設定されていません。")
         return False
