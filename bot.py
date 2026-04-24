@@ -56,7 +56,7 @@ def main():
         if last_data.get(rss_url) != link:
             # 投稿にはエスケープ済みの safe_link を使う
             content = f"【新着】{title}\n{safe_link}"
-           　
+         
             if post_to_uwuzu(content):
                 # 記録を更新
                 last_data[rss_url] = link
