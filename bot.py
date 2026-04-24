@@ -5,62 +5,61 @@ import os
 # --- 設定エリア ---
 # uwuzuのインスタンスURLとRSSフィードのURLを指定
 UWUZU_INSTANCE = "https://uwuzu.ut-gov.f5.si/" # 自分の使っているサーバーURLに変更
-RSS_URL = "https://www.gizmodo.jp/index.xml"        # 取得したいRSSフィードのURLに変更
-LAST_LINK_FILE = "last_link.txt"            # 最後に投稿した記事を記録するファイル
+ # 取得したいRSSフィードのURLに変更
+ # 最後に投稿した記事を記録するファイル
+
+RSS_URLS = [
+    "https://www.gizmodo.jp/index.xml",
+    "https://www.itmedia.co.jp/news/subindex/index.xml",
+    "https://www3.nhk.or.jp/rss/news/cat0.xml",
+    "https://www.bbc.com/japanese/index.xml",
+    "https://gori.me/feed"
+]
+# 各サイトの最後の投稿を記録するファイル（JSON形式に変更すると管理が楽です）
+LAST_DATA_FILE = "last_links.json"
 
 def post_to_uwuzu(text):
-    """仕様に完全に合わせた投稿関数"""
     token = os.environ.get("UWUZU_TOKEN")
-    
-    # 仕様通りのエンドポイント
     url = f"{UWUZU_INSTANCE}/api/ueuse/create"
-    
-    # 必須パラメータをJSONで構成
-    # 仕様書通りに token と text を入れる
-    data = {
-        "token": token,
-        "text": text
-    }
-    
+    data = {"token": token, "text": text}
     try:
-        # 認証ヘッダーを使わず、データの中にトークンを入れてPOSTする
         response = requests.post(url, json=data)
-        
-        if response.status_code == 200:
-            print("投稿成功！")
-            return True
-        else:
-            print(f"投稿失敗。ステータスコード: {response.status_code}")
-            print(f"エラー内容: {response.text}")
-            return False
-    except Exception as e:
-        print(f"通信エラーが発生しました: {e}")
+        return response.status_code == 200
+    except:
         return False
 
 def main():
-    feed = feedparser.parse(RSS_URL)
-    if not feed.entries:
-        print("記事が見つかりません。")
-        return
+    # 前回の記録を読み込む（なければ空の辞書）
+    last_data = {}
+    if os.path.exists(LAST_DATA_FILE):
+        with open(LAST_DATA_FILE, "r") as f:
+            last_data = json.load(f)
 
-    latest_entry = feed.entries[0]
-    title = latest_entry.title
-    link = latest_entry.link
+    # リストにあるURLを一つずつチェック
+    for rss_url in RSS_URLS:
+        print(f"チェック中: {rss_url}")
+        feed = feedparser.parse(rss_url)
+        if not feed.entries:
+            continue
 
-    last_link = ""
-    if os.path.exists(LAST_LINK_FILE):
-        with open(LAST_LINK_FILE, "r") as f:
-            last_link = f.read().strip()
+        latest_entry = feed.entries[0]
+        title = latest_entry.title
+        link = latest_entry.link
 
-    if link != last_link:
-        # 投稿する文章を作る
-        content = f"【新着】{title}\n{link}"
-        
-        if post_to_uwuzu(content):
-            with open(LAST_LINK_FILE, "w") as f:
-                f.write(link)
-    else:
-        print("新着記事はないよ。")
+        # そのサイトの「前回のリンク」と比較
+        if last_data.get(rss_url) != link:
+            print(f"新着あり: {title}")
+            content = f"【新着】{title}\n{link}"
+            
+            if post_to_uwuzu(content):
+                # 記録を更新
+                last_data[rss_url] = link
+        else:
+            print("新着なし")
+
+    # 全サイトのチェックが終わったら、まとめて記録を保存
+    with open(LAST_DATA_FILE, "w") as f:
+        json.dump(last_data, f)
 
 if __name__ == "__main__":
     main()
