@@ -9,19 +9,34 @@ RSS_URL = "https://example.com/feed"        # 取得したいRSSフィードのU
 LAST_LINK_FILE = "last_link.txt"            # 最後に投稿した記事を記録するファイル
 
 def post_to_uwuzu(text):
-    """uwuzuのAPIを使って投稿する"""
+    """uwuzu専用APIを使って投稿する"""
     token = os.environ.get("UWUZU_TOKEN")
     if not token:
         print("Error: UWUZU_TOKEN が設定されていません。")
         return False
     
-    url = f"{UWUZU_INSTANCE}/api/v1/statuses"
-    headers = {"Authorization": f"Bearer {token}"}
-    data = {"status": text}
+    # 仕様に基づいたURL
+    url = f"{UWUZU_INSTANCE}/api/ueuse/create"
     
-    response = requests.post(url, headers=headers, json=data)
-    return response.status_code == 200
-
+    # 必須パラメータをJSONで送信
+    data = {
+        "token": token,
+        "text": text
+    }
+    
+    try:
+        # POSTリクエストを送信
+        response = requests.post(url, json=data)
+        
+        # 成功したかどうかの確認
+        if response.status_code == 200:
+            return True
+        else:
+            print(f"投稿失敗: {response.status_code} - {response.text}")
+            return False
+    except Exception as e:
+        print(f"エラーが発生しました: {e}")
+        return False
 def main():
     # RSSフィードを解析
     feed = feedparser.parse(RSS_URL)
