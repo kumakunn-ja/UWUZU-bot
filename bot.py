@@ -37,7 +37,7 @@ def post_to_uwuzu(message):
         print("Error: UWUZU_API_KEY が設定されていません。")
         return False
 
-    url = f"{UWUZU_INSTANCE.rstrip('/')}/api/v1/posts"
+    url = f"{UWUZU_INSTANCE.rstrip('/')}"/api/ueuse/create
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
