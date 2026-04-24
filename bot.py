@@ -19,55 +19,44 @@ RSS_URLS = [
 # 各サイトの最後の投稿を記録するファイル（JSON形式に変更すると管理が楽です）
 LAST_DATA_FILE = "last_links.json"
 
-def post_to_uwuzu(text):
-    token = os.environ.get("UWUZU_TOKEN")
-    url = f"{UWUZU_INSTANCE}/api/ueuse/create"
-    data = {"token": token, "text": text}
-    try:
-        response = requests.post(url, json=data)
-        return response.status_code == 200
-    except:
-        return False
+
+
 
 def main():
-    # 前回の記録を読み込む（なければ空の辞書）
-    last_data = {}
-    if os.path.exists(LAST_DATA_FILE):
-        with open(LAST_DATA_FILE, "r") as f:
-            last_data = json.load(f)
+    last_data = load_last_data()
+    all_new_content = ""  # 全体の投稿内容を貯める変数
 
-    # リストにあるURLを一つずつチェック
     for rss_url in RSS_URLS:
-        print(f"チェック中: {rss_url}")
         feed = feedparser.parse(rss_url)
         if not feed.entries:
             continue
 
-        latest_entry = feed.entries[0]
-        # ...（中略）...
-        title = latest_entry.title
-        raw_link = latest_entry.link.split('?')[0]
+        site_title = feed.feed.title  # サイト名（GizmodoやNHKニュースなど）を取得
+        site_posts = []
 
-        # 1. http を https に強制変換
-        # これで NHK などの古いリンク形式も今のブラウザで開けるようになります
-        link = raw_link.replace("http://", "https://")
+        # 各サイトの最新3件をチェック（まとめすぎると長くなるので3件くらいがおすすめ）
+        for entry in feed.entries[:3]:
+            raw_link = entry.link.split('?')[0]
+            link = raw_link.replace("http://", "https://")
+            
+            if last_data.get(rss_url) != link:
+                title = entry.title
+                safe_link = link.replace("_", "\\_")
+                site_posts.append(f"・{title}\n  {safe_link}")
+                
+                # そのサイトの最新記事として記憶
+                if entry == feed.entries[0]:
+                    last_data[rss_url] = link
 
-        # 2. 前回の uwuzu (Markdown) 対策も忘れずに
-        safe_link = link.replace("_", "\\_")
+        # このサイトに新着があれば、見出し付きで追加
+        if site_posts:
+            all_new_content += f"【{site_title}】\n" + "\n".join(site_posts) + "\n\n"
 
-        if last_data.get(rss_url) != link:
-            # 投稿にはエスケープ済みの safe_link を使う
-            content = f"【新着】{title}\n{safe_link}"
-         
-            if post_to_uwuzu(content):
-                # 記録を更新
-                last_data[rss_url] = link
-        else:
-            print("新着なし")
-
-    # 全サイトのチェックが終わったら、まとめて記録を保存
-    with open(LAST_DATA_FILE, "w") as f:
-        json.dump(last_data, f)
-
-if __name__ == "__main__":
-    main()
+    # 全サイト分をまとめて1回だけ投稿
+    if all_new_content:
+        # 先頭にタイトルをつける
+        final_message = "📢 新着ニュースまとめ\n\n" + all_new_content.strip()
+        
+        if post_to_uwuzu(final_message):
+            save_last_data(last_data)
+            print("サイトごとにまとめて投稿しました！")
