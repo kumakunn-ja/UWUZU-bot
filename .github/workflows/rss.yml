@@ -1,6 +1,6 @@
 name: RSS to uwuzu
 on:
-    - cron: '*/60 * * * *'
+    - cron: '*/6 * * * *'
   schedule:
   workflow_dispatch:
 
