@@ -65,7 +65,7 @@ def main():
             site_posts = []
 
             # 直近3件をチェック
-            for entry in feed.entries[:3]:
+            for entry in feed.entries[:8]:
                 raw_link = entry.link.split('?')[0]
                 link = raw_link.replace("http://", "https://")
                 
