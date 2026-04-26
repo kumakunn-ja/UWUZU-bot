@@ -6,7 +6,7 @@ import json
 # --- 設定エリア ---
 UWUZU_INSTANCE = "https://uwuzu.ut-gov.f5.si/"
 RSS_URLS = [
-    "https://www.gizmodo.jp/index.xml",
+    "https://rss.app/feeds/N4ZlfFqIWQVAMvsa.xml",
     "https://www.itmedia.co.jp/news/subindex/index.xml",
     "https://www3.nhk.or.jp/rss/news/cat0.xml",
     "https://www.bbc.com/japanese/index.xml",
