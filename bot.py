@@ -9,8 +9,7 @@ RSS_URLS = [
     "https://rss.app/feeds/N4ZlfFqIWQVAMvsa.xml",
     "https://www.itmedia.co.jp/news/subindex/index.xml",
     "https://www3.nhk.or.jp/rss/news/cat0.xml",
-    "https://www.bbc.com/japanese/index.xml",
-    "https://gori.me/feed"
+    "https://news.yahoo.co.jp/rss/topics/top-picks.xml"
 ]
 LAST_DATA_FILE = "last_links.json"
 
