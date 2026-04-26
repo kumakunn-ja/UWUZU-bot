@@ -8,8 +8,7 @@ UWUZU_INSTANCE = "https://uwuzu.ut-gov.f5.si/"
 RSS_URLS = [
     "https://rss.app/feeds/N4ZlfFqIWQVAMvsa.xml",
     "https://www.itmedia.co.jp/news/subindex/index.xml",
-    "https://www3.nhk.or.jp/rss/news/cat0.xml",
-    "https://news.yahoo.co.jp/rss/topics/top-picks.xml"
+    "https://www3.nhk.or.jp/rss/news/cat0.xml"
 ]
 LAST_DATA_FILE = "last_links.json"
 
